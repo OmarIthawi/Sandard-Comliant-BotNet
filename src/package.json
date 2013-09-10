@@ -1,0 +1,15 @@
+{
+  "name": "HttpCnC",
+  "subdomain": "HttpCnC",
+  "scripts": {
+    "start": "main.js"
+  },
+  "version": "0.1.0-9",
+  "engines": {
+    "node": "0.8.x"
+  },
+  "dependencies": {
+    "sugar": "1.3.7",
+    "socket.io": "0.9.13"
+  }
+}

